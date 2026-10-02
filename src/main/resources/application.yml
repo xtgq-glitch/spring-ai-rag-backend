@@ -13,7 +13,8 @@ spring:
       max-request-size: 50MB
   ai:
     deepseek:
-      api-key: ${DEEPSEEK_API_KEY}
+      # API key 不配置在本文件：请写入根目录 application-local.yml（不入库）
+      # 或设置环境变量 DEEPSEEK_API_KEY
       chat:
         options:
           model: deepseek-chat
