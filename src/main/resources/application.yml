@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-ai-rag-demo
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  ai:
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY}
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7
+    # Embedding 使用本地 ONNX 模型 all-MiniLM-L6-v2（384 维），
+    # 模型文件已随项目放在 src/main/resources/onnx/ 下，走 classpath 加载，离线可用。
+    # 若删除了本地模型文件，可改回远程下载（国内用 hf-mirror 镜像）：
+    #   embedding:
+    #     transformer:
+    #       onnx:
+    #         model-uri: https://hf-mirror.com/Xenova/all-MiniLM-L6-v2/resolve/main/onnx/model.onnx
+    #       tokenizer:
+    #         uri: https://hf-mirror.com/Xenova/all-MiniLM-L6-v2/resolve/main/tokenizer.json
+    embedding:
+      transformer:
+        onnx:
+          model-uri: classpath:/onnx/all-MiniLM-L6-v2/model.onnx
+        tokenizer:
+          uri: classpath:/onnx/all-MiniLM-L6-v2/tokenizer.json

@@ -1,0 +1,8 @@
+target/
+.idea/
+*.iml
+.classpath
+.project
+.vscode/
+# 向量化模型二进制不入库，克隆后运行 download-model.ps1 获取
+src/main/resources/onnx/
