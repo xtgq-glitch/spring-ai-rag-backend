@@ -7,7 +7,7 @@
 | 组件 | 选择 | 说明 |
 |---|---|---|
 | 框架 | Spring Boot 3.5 + Spring AI 1.1.8 | |
-| 大模型 | DeepSeek（`deepseek-chat`） | 只负责对话/回答，配置 `DEEPSEEK_API_KEY` 即可 |
+| 大模型 | DeepSeek（`deepseek-chat`） | 只负责对话/回答，Key 配置在 `application-local.yml`（不入库）或环境变量 |
 | Embedding | 本地 ONNX 模型 `all-MiniLM-L6-v2` | **DeepSeek 官方不提供 embedding 接口**，故用本地模型，无需额外 API Key；模型文件已内置在 `src/main/resources/onnx/` |
 | 向量库 | `SimpleVectorStore`（内存） | 重启即清空，仅用于演示 |
 | 文档解析 | Apache Tika（`spring-ai-tika-document-reader`） | 支持 PDF/DOCX/PPTX 等 |
@@ -22,12 +22,12 @@
 
 ```bash
 # 1. 配置 DeepSeek API Key（https://platform.deepseek.com/api_keys 申请）
-# Windows CMD:
-set DEEPSEEK_API_KEY=sk-xxxx
-# PowerShell:
-$env:DEEPSEEK_API_KEY="sk-xxxx"
-# Linux/Mac:
-export DEEPSEEK_API_KEY=sk-xxxx
+#    首选：填入项目根目录的 application-local.yml（已被 .gitignore 忽略，不会提交）
+#      spring.ai.deepseek.api-key: sk-你的key
+#    或继续用环境变量（优先级更高）：
+# Windows CMD:  set DEEPSEEK_API_KEY=sk-xxxx
+# PowerShell:   $env:DEEPSEEK_API_KEY="sk-xxxx"
+# Linux/Mac:    export DEEPSEEK_API_KEY=sk-xxxx
 
 # 2. 启动
 mvn spring-boot:run

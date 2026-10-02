@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: spring-ai-rag-demo
+  # 可选加载根目录的本地私密配置（application-local.yml，已被 .gitignore 忽略）
+  config:
+    import: optional:file:./application-local.yml
   servlet:
     multipart:
       max-file-size: 50MB

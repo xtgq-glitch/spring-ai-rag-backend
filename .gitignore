@@ -6,3 +6,5 @@ target/
 .vscode/
 # 向量化模型二进制不入库，克隆后运行 download-model.ps1 获取
 src/main/resources/onnx/
+# 本地私密配置：真实 API Key 只放在这里，永不入库
+/application-local.yml
