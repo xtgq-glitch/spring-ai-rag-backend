@@ -1,0 +1,7 @@
+# 本地私密配置：本文件首次以【占位符】提交后即被移出版本控制（见 .gitignore），
+# 此后填入真实 Key 也不会被 git 提交/推送。
+# 优先级：环境变量 DEEPSEEK_API_KEY > 本文件 > application.yml
+spring:
+  ai:
+    deepseek:
+      api-key: sk-please-replace-with-your-own-deepseek-key
