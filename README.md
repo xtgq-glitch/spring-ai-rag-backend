@@ -60,6 +60,8 @@ curl "http://localhost:8080/chat?message=What is this document about?"
 # => {"answer":"..."}
 ```
 
+See [verification log](docs/verification.md) for end-to-end test results.
+
 ## Project Layout
 
 ```
