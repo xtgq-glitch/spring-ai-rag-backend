@@ -4,7 +4,7 @@ server:
 spring:
   application:
     name: spring-ai-rag-demo
-  # 可选加载根目录的本地私密配置（application-local.yml，已被 .gitignore 忽略）
+  # Optionally load local, git-ignored overrides (application-local.yml in the project root)
   config:
     import: optional:file:./application-local.yml
   servlet:
@@ -13,15 +13,15 @@ spring:
       max-request-size: 50MB
   ai:
     deepseek:
-      # API key 不配置在本文件：请写入根目录 application-local.yml（不入库）
-      # 或设置环境变量 DEEPSEEK_API_KEY
+      # The API key is NOT configured here: put it in application-local.yml (not committed)
+      # or provide it through the DEEPSEEK_API_KEY environment variable.
       chat:
         options:
           model: deepseek-chat
           temperature: 0.7
-    # Embedding 使用本地 ONNX 模型 all-MiniLM-L6-v2（384 维），
-    # 模型文件已随项目放在 src/main/resources/onnx/ 下，走 classpath 加载，离线可用。
-    # 若删除了本地模型文件，可改回远程下载（国内用 hf-mirror 镜像）：
+    # Embeddings use the local ONNX model all-MiniLM-L6-v2 (384 dimensions), loaded from the
+    # classpath so no network access is required at runtime. If the model files are removed,
+    # switch to remote URLs (hf-mirror.com works from mainland China):
     #   embedding:
     #     transformer:
     #       onnx:

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="670" viewBox="0 0 900 670" font-family="Segoe UI, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,3 L0,6 z" fill="#57606a"/>
+    </marker>
+  </defs>
+  <rect width="900" height="670" fill="#ffffff"/>
+
+  <!-- REST API -->
+  <rect x="350" y="30" width="200" height="50" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="450" y="60" text-anchor="middle" font-size="15" fill="#24292f">REST API</text>
+  <text x="450" y="100" text-anchor="middle" font-size="11.5" font-family="Consolas, monospace" fill="#57606a">POST /api/documents &#183; POST /api/chat</text>
+  <line x1="450" y1="80" x2="450" y2="128" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Spring Boot application -->
+  <rect x="325" y="130" width="250" height="50" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="450" y="160" text-anchor="middle" font-size="15" fill="#24292f">Spring Boot Application</text>
+
+  <!-- split into ingest / query paths -->
+  <path d="M420,180 V215 H240 V233" fill="none" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="300" y="208" font-size="12" fill="#0969da">ingest</text>
+  <path d="M480,180 V215 H700 V233" fill="none" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="580" y="208" font-size="12" fill="#8250df">query</text>
+
+  <!-- ingestion column -->
+  <rect x="140" y="235" width="200" height="50" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="240" y="265" text-anchor="middle" font-size="14" fill="#24292f">Apache Tika</text>
+  <line x1="240" y1="285" x2="240" y2="313" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="140" y="315" width="200" height="50" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="240" y="345" text-anchor="middle" font-size="14" fill="#24292f">TokenTextSplitter</text>
+  <line x1="240" y1="365" x2="240" y2="393" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="140" y="395" width="200" height="50" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="240" y="417" text-anchor="middle" font-size="14" fill="#24292f">EmbeddingModel</text>
+  <text x="240" y="434" text-anchor="middle" font-size="11" font-family="Consolas, monospace" fill="#57606a">all-MiniLM-L6-v2 (ONNX)</text>
+  <line x1="240" y1="445" x2="240" y2="473" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="140" y="475" width="200" height="50" rx="8" fill="#dafbe1" stroke="#1a7f37"/>
+  <text x="240" y="497" text-anchor="middle" font-size="14" fill="#0f5323">SimpleVectorStore</text>
+  <text x="240" y="514" text-anchor="middle" font-size="11" font-family="Consolas, monospace" fill="#1a7f37">in-memory</text>
+
+  <!-- query column -->
+  <rect x="600" y="235" width="200" height="50" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="700" y="265" text-anchor="middle" font-size="14" fill="#24292f">Similarity Search</text>
+  <line x1="700" y1="285" x2="700" y2="313" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="600" y="315" width="200" height="50" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="700" y="345" text-anchor="middle" font-size="14" fill="#24292f">Prompt Assembly</text>
+  <line x1="700" y1="365" x2="700" y2="393" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="600" y="395" width="200" height="50" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="700" y="425" text-anchor="middle" font-size="14" fill="#24292f">ChatClient (Spring AI)</text>
+  <line x1="700" y1="445" x2="700" y2="473" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="600" y="475" width="200" height="50" rx="8" fill="#ffebe9" stroke="#cf222e"/>
+  <text x="700" y="505" text-anchor="middle" font-size="14" fill="#82071e">DeepSeek &#183; deepseek-chat</text>
+
+  <!-- retrieval arrow -->
+  <path d="M340,500 H560 V260 H598" fill="none" stroke="#1a7f37" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+  <text x="380" y="492" font-size="12" fill="#1a7f37">retrieve top-K</text>
+
+  <!-- answer out -->
+  <path d="M700,525 V598 H572" fill="none" stroke="#57606a" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="300" y="575" width="270" height="46" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="435" y="603" text-anchor="middle" font-size="13" fill="#24292f">JSON response &#183; answer + sources</text>
+
+  <text x="20" y="655" font-size="11.5" fill="#57606a">Embeddings are computed locally; only the answer step calls the DeepSeek API.</text>
+</svg>

@@ -1,16 +1,66 @@
-# Spring AI RAG Demo
+# Spring AI RAG Backend
 
-A minimal RAG (Retrieval-Augmented Generation) example built with **Spring Boot 3 + Spring AI**: upload a PDF → chunk & embed → store in an in-memory vector store → ask questions grounded in the uploaded documents.
+A production-oriented RAG backend example built with **Spring Boot** and **Spring AI**.
+
+This project demonstrates how to integrate document ingestion, local embeddings, vector similarity search, and LLM-based question answering into an existing Java backend application.
+
+![Architecture](docs/images/architecture.svg)
+
+## Use Case
+
+This project demonstrates a common enterprise scenario:
+
+- Upload internal documents (PDF, DOCX, TXT, HTML, ...)
+- Index and retrieve the relevant content
+- Ask questions against the uploaded documents
+- Generate answers grounded in the retrieved context, with the source snippets returned
+
+The project is intentionally kept small so the core RAG workflow stays easy to follow.
 
 ## Tech Stack
 
 | Component | Choice | Notes |
 |---|---|---|
 | Framework | Spring Boot 3.5 + Spring AI 1.1.8 | |
-| LLM | DeepSeek (`deepseek-chat`) | Generates the answers; API key goes in `application-local.yml` (not committed) or env vars |
-| Embeddings | Local ONNX model `all-MiniLM-L6-v2` | DeepSeek offers no embedding API, so a local model is used — no extra API key needed |
-| Vector store | `SimpleVectorStore` (in-memory) | Cleared on restart; for demo purposes only |
-| Document parsing | Apache Tika (`spring-ai-tika-document-reader`) | Supports PDF/DOCX/PPTX and more |
+| LLM | DeepSeek (`deepseek-chat`) | Generates the answers; the API key stays in `application-local.yml` (not committed) or an environment variable |
+| Embeddings | Local ONNX model `all-MiniLM-L6-v2` | DeepSeek offers no embedding API, so a local model is used — no extra API key |
+| Vector store | `SimpleVectorStore` (in-memory) | Cleared on restart — see [Production Considerations](#production-considerations) |
+| Document parsing | Apache Tika | PDF, DOCX, PPTX, TXT, HTML and more |
+| Validation | Jakarta Bean Validation | Validated request DTOs plus a `@RestControllerAdvice` error handler |
+
+## API
+
+### `POST /api/documents` — upload and index a document
+
+![Upload](docs/images/upload.png)
+
+```bash
+curl -X POST -F "file=@docs/samples/travel-policy.pdf" http://localhost:8080/api/documents
+# HTTP/1.1 201 Created
+# {"filename":"travel-policy.pdf","chunks":1,"totalChunks":1}
+```
+
+Supported formats: `pdf`, `doc`, `docx`, `ppt`, `pptx`, `txt`, `md`, `html`. Anything else returns `415 Unsupported Media Type`; an empty file returns `400 Bad Request`.
+
+### `POST /api/chat` — ask a question about the indexed documents
+
+![RAG query](docs/images/query.png)
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+     -d '{"message":"What is the hotel budget for first-tier cities?"}' \
+     http://localhost:8080/api/chat
+# HTTP/1.1 200 OK
+# {"answer":"The hotel budget for first-tier cities ... is capped at CNY 600 per night.","sources":["..."]}
+```
+
+Errors use a consistent payload with a proper status code:
+
+```json
+{"status":400,"error":"Bad Request","message":"message must not be blank"}
+```
+
+A full record of these calls is kept in the [verification log](docs/verification.md).
 
 ## Quick Start
 
@@ -18,7 +68,7 @@ A minimal RAG (Retrieval-Augmented Generation) example built with **Spring Boot 
 
 ### 1. Configure your DeepSeek API key
 
-Get one at [platform.deepseek.com](https://platform.deepseek.com/api_keys). Preferred: put it into `application-local.yml` in the project root (git-ignored — it was committed once as a placeholder template and then untracked, so your real key never enters git):
+Get one at [platform.deepseek.com](https://platform.deepseek.com/api_keys). Put it into `application-local.yml` in the project root (git-ignored — it was committed once as a placeholder template and then untracked, so your real key never enters git):
 
 ```yaml
 spring:
@@ -44,50 +94,61 @@ Both fetch from the hf-mirror.com mirror; see the comments in `application.yml` 
 mvn spring-boot:run
 ```
 
-## API
-
-### 1. Upload a PDF
-
-```bash
-curl -F "file=@your-document.pdf" http://localhost:8080/upload
-# => {"filename":"your-document.pdf","chunks":42}
-```
-
-### 2. Ask questions about the uploaded documents
-
-```bash
-curl "http://localhost:8080/chat?message=What is this document about?"
-# => {"answer":"..."}
-```
-
-See [verification log](docs/verification.md) for end-to-end test results.
-
 ## Project Layout
 
 ```
 src/main/java/com/example/ragdemo/
-├── RagDemoApplication.java   # Bootstrap + SimpleVectorStore bean
-└── RagController.java        # The only controller: /upload and /chat
+├── RagDemoApplication.java              # Bootstrap
+├── config/VectorStoreConfig.java        # SimpleVectorStore bean
+├── controller/
+│   ├── DocumentController.java          # POST /api/documents
+│   └── ChatController.java              # POST /api/chat
+├── dto/                                 # ChatRequest, ChatResponse, UploadResponse, ApiError
+├── exception/                           # InvalidRequestException, UnsupportedDocumentTypeException
+├── service/
+│   ├── DocumentService.java             # validate -> parse -> chunk -> embed -> store
+│   └── RagService.java                  # retrieve -> assemble prompt -> answer
+└── web/GlobalExceptionHandler.java      # exception -> HTTP status + JSON error payload
 src/main/resources/
-├── application.yml                        # Model config, multipart limits, optional local-config import
-└── onnx/all-MiniLM-L6-v2/                 # Embedding model (not committed; fetched by the download scripts)
-    ├── model.onnx
-    └── tokenizer.json
-application-local.yml                       # Local secrets — git-ignored; only a placeholder was committed once
-download-model.ps1 / download-model.sh      # One-click download of the embedding model
+├── application.yml                      # Model config, multipart limits, optional local-config import
+└── onnx/all-MiniLM-L6-v2/               # Embedding model (not committed; fetched by the download scripts)
+docs/
+├── images/                              # Architecture diagram and API screenshots
+├── samples/travel-policy.pdf            # Sample document used in the examples
+└── verification.md                      # End-to-end request/response records
+application-local.yml                     # Local secrets — git-ignored
 LICENSE
 ```
 
-## Core Flow (RagController)
+## Core Flow
 
-- `POST /upload`: `TikaDocumentReader` parses the PDF → `TokenTextSplitter` chunks by token count → `vectorStore.add()` embeds and stores
-- `GET /chat`: `vectorStore.similaritySearch()` fetches the top-4 relevant chunks → injected into the system prompt → `ChatClient` calls DeepSeek to generate the answer
+**Ingestion** — `POST /api/documents`
 
-## Common Adjustments
+1. `DocumentService` validates the upload (empty file, supported extension) and parses it with Apache Tika.
+2. `TokenTextSplitter` splits the extracted text into token-sized chunks.
+3. Each chunk is embedded locally (ONNX `all-MiniLM-L6-v2`) and stored in `SimpleVectorStore`.
 
-- **Switch embedding provider**: DeepSeek has no embedding API. To use an OpenAI-compatible cloud embedding (e.g. SiliconFlow), add `spring-ai-starter-model-openai` to the pom and set `spring.ai.model.embedding: openai` plus the matching `base-url/api-key/model` in the yml.
-- **Persistence**: `SimpleVectorStore` offers `save(File)` / `load(File)`, or switch to a production vector-store starter (PGvector/Redis, etc.).
-- **Chunking granularity**: `new TokenTextSplitter(800, 350, 5, 10000, true, List.of('.', '?', '!', '\n', ';'))` to customize sentence-boundary punctuation.
+**Query** — `POST /api/chat`
+
+1. `RagService` embeds the question and runs a top-K similarity search (`TOP_K = 4`).
+2. The retrieved chunks are assembled into the system prompt.
+3. `ChatClient` calls DeepSeek and the answer is returned together with the source snippets.
+
+## Production Considerations
+
+This repository is intentionally simplified for demonstration.
+
+For production use, the following areas should be extended:
+
+- **Persistent vector store** (PGVector, Redis, ...) instead of the in-memory implementation
+- **Authentication and authorization** on both endpoints
+- **Stricter file validation**: content-type sniffing, per-user quotas, virus scanning
+- **Asynchronous ingestion** so large documents do not block the request thread
+- **Observability**: metrics, tracing and structured logging around retrieval and LLM calls
+- **Retrieval evaluation**: recall/precision tracking and chunk-size tuning
+- **Rate limiting and cost control** for LLM calls
+- **Multi-user document isolation** through namespaces or metadata filters
+- **Document registry** in a database with deduplication and re-indexing
 
 ## Author
 
