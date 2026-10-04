@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: spring-ai-rag-demo
+    name: spring-ai-rag-backend
   # Optionally load local, git-ignored overrides (application-local.yml in the project root)
   config:
     import: optional:file:./application-local.yml

@@ -12,9 +12,9 @@
     </parent>
 
     <groupId>com.example</groupId>
-    <artifactId>spring-ai-rag-demo</artifactId>
+    <artifactId>spring-ai-rag-backend</artifactId>
     <version>1.0.0</version>
-    <name>spring-ai-rag-demo</name>
+    <name>spring-ai-rag-backend</name>
     <description>
         Spring Boot + Spring AI RAG backend demonstrating document ingestion,
         vector retrieval, and grounded LLM question answering.
