@@ -21,13 +21,13 @@ spring:
           temperature: 0.7
     # Embeddings use the local ONNX model all-MiniLM-L6-v2 (384 dimensions), loaded from the
     # classpath so no network access is required at runtime. If the model files are removed,
-    # switch to remote URLs (hf-mirror.com works from mainland China):
+    # switch to remote URLs (huggingface.co is the default; hf-mirror.com works from mainland China):
     #   embedding:
     #     transformer:
     #       onnx:
-    #         model-uri: https://hf-mirror.com/Xenova/all-MiniLM-L6-v2/resolve/main/onnx/model.onnx
+    #         model-uri: https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/onnx/model.onnx
     #       tokenizer:
-    #         uri: https://hf-mirror.com/Xenova/all-MiniLM-L6-v2/resolve/main/tokenizer.json
+    #         uri: https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/tokenizer.json
     embedding:
       transformer:
         onnx:

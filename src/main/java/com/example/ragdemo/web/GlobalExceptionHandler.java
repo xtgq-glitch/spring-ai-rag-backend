@@ -46,8 +46,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiError> handleUnexpected(Exception ex) {
-        log.error("Unexpected error while handling request", ex);
-        return error(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage());
+        log.error("Unhandled exception while processing request", ex);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected server error");
     }
 
     private ResponseEntity<ApiError> error(HttpStatus status, String message) {

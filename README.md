@@ -86,7 +86,12 @@ The embedding model (~90MB) is not committed to git. Download it with the platfo
 - **Windows**: `powershell -File download-model.ps1`
 - **Mac / Linux**: `bash download-model.sh`
 
-Both fetch from the hf-mirror.com mirror; see the comments in `application.yml` for the remote-URL alternative.
+Both fetch from Hugging Face. If `huggingface.co` is not reachable from your network (for example in mainland China), use the mirror instead:
+
+- **Windows**: `powershell -File download-model.ps1 -Mirror`
+- **Mac / Linux**: `bash download-model.sh mirror`
+
+You can also skip the scripts and point `spring.ai.embedding.transformer.onnx.model-uri` / `tokenizer.uri` in `application.yml` at any reachable URL — see the comments there.
 
 ### 3. Run
 
@@ -112,6 +117,10 @@ src/main/java/com/example/ragdemo/
 src/main/resources/
 ├── application.yml                      # Model config, multipart limits, optional local-config import
 └── onnx/all-MiniLM-L6-v2/               # Embedding model (not committed; fetched by the download scripts)
+src/test/java/com/example/ragdemo/
+├── service/DocumentServiceTest.java     # upload validation and ingestion pipeline
+├── service/RagServiceTest.java          # behaviour when no context is retrieved
+└── web/ApiErrorHandlingTest.java        # 400 / 413 / 415 / 500 error mapping
 docs/
 ├── images/                              # Architecture diagram and API screenshots
 ├── samples/travel-policy.pdf            # Sample document used in the examples
