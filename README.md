@@ -40,7 +40,7 @@ curl -X POST -F "file=@docs/samples/travel-policy.pdf" http://localhost:8080/api
 # {"filename":"travel-policy.pdf","chunks":1,"totalChunks":1}
 ```
 
-Supported formats: `pdf`, `doc`, `docx`, `ppt`, `pptx`, `txt`, `md`, `html`. Anything else returns `415 Unsupported Media Type`; an empty file returns `400 Bad Request`.
+Supported formats: `pdf`, `doc`, `docx`, `ppt`, `pptx`, `txt`, `md`, `html`, `htm`. Anything else returns `415 Unsupported Media Type`; an empty file returns `400 Bad Request`.
 
 ### `POST /api/chat` — ask a question about the indexed documents
 
@@ -64,7 +64,7 @@ A full record of these calls is kept in the [verification log](docs/verification
 
 ## Quick Start
 
-> **JDK 17+ required.** Make sure your `JAVA_HOME` points to JDK 17 before running.
+> **Prerequisites: JDK 17+ and Maven 3.6+.** Make sure your `JAVA_HOME` points to JDK 17 before running. The repository ships no Maven wrapper, so `mvn` must be available on your `PATH`.
 
 ### 1. Configure your DeepSeek API key
 
